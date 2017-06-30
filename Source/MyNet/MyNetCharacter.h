@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Components/TextRenderComponent.h"
+#include "Net/UnrealNetwork.h"
 #include "MyNetCharacter.generated.h"
 
 UCLASS(config=Game)
@@ -68,5 +70,56 @@ public:
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+
+// ---------------- Network Logic
+// -----------------------------
+protected:
+
+	/** The health of the character */
+	UPROPERTY(VisibleAnywhere, Transient, ReplicatedUsing = OnRep_Health, Category = Stats)
+	float Health;
+
+	/** The max health of the character */
+	UPROPERTY(EditAnywhere, Category = Stats)
+	float MaxHealth = 100.f;
+
+	/** The number of bombs that the character carries */
+	UPROPERTY(VisibleAnywhere, Transient, ReplicatedUsing = OnRep_BombCount, Category = Stats)
+	int32 BombCount;
+
+	/** The max number of bombs that a character can have */
+	UPROPERTY(EditAnywhere, Category = Stats)
+	int32 MaxBombCount = 3;
+
+	/** Text render component - used instead of UMG, to keep the tutorial short */
+	UPROPERTY(VisibleAnywhere)
+	UTextRenderComponent* CharText;
+
+private:
+	/** Called when the Health viriable gets updated */
+	UFUNCTION()
+	void OnRep_Health();
+
+	/** Called when the BombCount variable gets updated */
+	UFUNCTION()
+	void OnRep_BombCount();
+
+	/** Initialize Health */
+	UFUNCTION()
+	void InitHealth();
+
+	/** Initialize bomb count */
+	UFUNCTION()
+	void InitBombCount();
+
+	/** Updates the cahracter's textt to match with the updated status */
+	void UpdateCharText();
+
+public:
+
+	/** MArks the properties we wish to replicate */
+	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty > & OutLifetimeProps ) const;
+
+	virtual void BeginPlay() override;
 };
 

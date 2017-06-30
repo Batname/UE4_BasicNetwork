@@ -45,6 +45,15 @@ AMyNetCharacter::AMyNetCharacter()
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
+
+
+	// ---------------- Network Logic
+	// -----------------------------
+	CharText = CreateDefaultSubobject<UTextRenderComponent>(TEXT("CharText"));
+	CharText->SetRelativeLocation(FVector(0, 0, 100));
+	CharText->SetupAttachment(RootComponent);
+
+	bReplicates = true;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -131,4 +140,56 @@ void AMyNetCharacter::MoveRight(float Value)
 		// add movement in that direction
 		AddMovementInput(Direction, Value);
 	}
+}
+
+void AMyNetCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	//Tell the engine to call the OnRep_Health and OnRep_BombCount each time
+	//a variable changes
+	DOREPLIFETIME(AMyNetCharacter, Health);
+	DOREPLIFETIME(AMyNetCharacter, BombCount);
+}
+
+
+void AMyNetCharacter::OnRep_Health()
+{
+	UpdateCharText();
+}
+
+void AMyNetCharacter::OnRep_BombCount()
+{
+	UpdateCharText();
+}
+
+void AMyNetCharacter::InitHealth()
+{
+	Health = MaxHealth;
+	UpdateCharText();
+}
+
+void AMyNetCharacter::InitBombCount()
+{
+	BombCount = MaxBombCount;
+	UpdateCharText();
+}
+
+void AMyNetCharacter::UpdateCharText()
+{
+	// Create string that will display the health and bomb values;
+	FString NextText = FString("Health: ") + FString::SanitizeFloat(Health) +
+		FString(" BombCount: ") + FString::FromInt(BombCount);
+
+
+	// Set the created string to the render comp
+	CharText->SetText(FText::FromString(NextText));
+}
+
+void AMyNetCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+
+	InitHealth();
+	InitBombCount();
 }

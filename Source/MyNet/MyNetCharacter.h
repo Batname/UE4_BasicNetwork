@@ -172,7 +172,7 @@ public:
 
 public:
 	/** Bomb Blueprint */
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = BombProps)
 	TSubclassOf<ABomb> BombActorBP;
 
 };

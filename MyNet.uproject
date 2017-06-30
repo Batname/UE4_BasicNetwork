@@ -1,0 +1,13 @@
+{
+	"FileVersion": 3,
+	"EngineAssociation": "{2025950F-2006-0B11-002C-013485C5CC33}",
+	"Category": "",
+	"Description": "",
+	"Modules": [
+		{
+			"Name": "MyNet",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		}
+	]
+}

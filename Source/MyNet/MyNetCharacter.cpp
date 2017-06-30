@@ -83,6 +83,10 @@ void AMyNetCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInp
 
 	// VR headset functionality
 	PlayerInputComponent->BindAction("ResetVR", IE_Pressed, this, &AMyNetCharacter::OnResetVR);
+
+	// ---------------- Network bombing
+	// -----------------------------
+	PlayerInputComponent->BindAction("ThrowBomb", IE_Pressed, this, &AMyNetCharacter::AttempToSpawnBomb);
 }
 
 
@@ -142,6 +146,9 @@ void AMyNetCharacter::MoveRight(float Value)
 	}
 }
 
+// ---------------- Network Logic
+// -----------------------------
+
 void AMyNetCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -193,3 +200,76 @@ void AMyNetCharacter::BeginPlay()
 	InitHealth();
 	InitBombCount();
 }
+
+// ---------------- Network bombing
+// -----------------------------
+float AMyNetCharacter::TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
+
+
+	// Decrease the character's hp
+	Health -= Damage;
+	if (Health <= 0)
+	{
+		InitHealth();
+	}
+
+	// Call the update text on the local client
+	// OnRep_health will be changed in every other client so the cahracter's text
+	// will be contain a text with the right values
+	UpdateCharText();
+
+	return Health;
+}
+
+void AMyNetCharacter::ServerTakeDamage_Implementation(float Damage, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
+}
+
+
+bool AMyNetCharacter::ServerTakeDamage_Validate(float Damage, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	// Assume that everithing is  ok withour any futher checks and return true
+	return true;
+}
+
+void AMyNetCharacter::AttempToSpawnBomb()
+{
+	// If we don't have authority, ameaning that we're not the server
+	// tell the server to spawn the bomb.
+	// IF we're the server, just spawn the bomb = we trust ourselfs.
+	if (Role < ROLE_Authority)
+	{
+		ServerSpawnBomb();
+	}
+	else
+	{
+		SpawnBomb();
+	}
+
+	// TODO: this code will be removed next part
+	FDamageEvent DmgEvent;
+
+	if (Role < ROLE_Authority)
+	{
+		ServerTakeDamage(25.f, DmgEvent, GetController(), this);
+	}
+	else
+	{
+		TakeDamage(25.f, DmgEvent, GetController(), this);
+	}
+}
+
+void AMyNetCharacter::ServerSpawnBomb_Implementation()
+{
+	SpawnBomb();
+}
+
+bool AMyNetCharacter::ServerSpawnBomb_Validate()
+{
+	return true;
+}
+
+

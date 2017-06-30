@@ -121,5 +121,53 @@ public:
 	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty > & OutLifetimeProps ) const;
 
 	virtual void BeginPlay() override;
+
+// ---------------- Network bombing
+// -----------------------------
+private:
+	/**
+	* TakeDamage Server version. Call this instead of TakeDamage when you're a client
+	* You don't have to generate an implementation. It will automaticly call the ServerTakeDamage_Implementation function
+	*/
+	UFUNCTION(Server, Reliable, WithValidation)
+	void ServerTakeDamage(float Damage, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser);
+
+	/** Contains the actual implementation of the ServerTakeDamage function */
+	void ServerTakeDamage_Implementation(float Damage, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser);
+
+	/** Validates the client. If the result is false teh client will be disconected */
+	bool ServerTakeDamage_Validate(float Damage, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser);
+
+	// Bomb related functions
+	
+	/** Will try to spawn a bomb */
+	void AttempToSpawnBomb();
+
+	/** Returns true if we can throw a bomb */
+	bool HasBombs() { return BombCount > 0; }
+
+	/**
+	* Spawns a bomb. Call this function when you'ar authorized to.
+	* In case you're not authorized, use the ServerSpawnBomb function
+	*/
+	void SpawnBomb();
+
+	/**
+	* SpawnBomb Server version. Call this insted of SpawnBomb when you're a client.
+	* You don't have to generate an implementation for this. It will automaticly call to ServerSpawnBomb_Implementation function
+	*/
+	UFUNCTION(Server, Reliable, WithValidation)
+	void ServerSpawnBomb();
+
+	/** Contains tha actual implementain of the ServerSpawnBomb function */
+	void ServerSpawnBomb_Implementation();
+
+	/** validates the client. If the result is false the client will be disconected */
+	bool ServerSpawnBomb_Validate();
+
+public:
+	/** Applies damage to the character */
+	virtual float TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser);
+
 };
 

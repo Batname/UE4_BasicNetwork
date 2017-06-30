@@ -117,7 +117,7 @@ private:
 
 public:
 
-	/** MArks the properties we wish to replicate */
+	/** Marks the properties we wish to replicate */
 	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty > & OutLifetimeProps ) const;
 
 	virtual void BeginPlay() override;

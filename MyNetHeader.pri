@@ -8839,6 +8839,7 @@ HEADERS += \
 	"$$unrealRootPath/Engine/Plugins/Tests/FunctionalTestingEditor/Source/Public/EditorAutomationModule.h" \
 	"$$unrealRootPath/Engine/Plugins/Tests/RuntimeTests/Source/RuntimeTests/Public/RuntimeTests.h" \
 	"$$unrealRootPath/Engine/Plugins/Tests/ScreenshotTools/Source/ScreenshotTools/Public/ScreenshotTools.h" \
+	"$$MyNetRootPath/Source/MyNet/Bomb.h" \
 	"$$MyNetRootPath/Source/MyNet/MyNet.h" \
 	"$$MyNetRootPath/Source/MyNet/MyNetCharacter.h" \
 	"$$MyNetRootPath/Source/MyNet/MyNetGameMode.h" \

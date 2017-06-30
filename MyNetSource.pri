@@ -6826,6 +6826,7 @@ SOURCES += \
 	"$$unrealRootPath/Engine/Plugins/Tests/RuntimeTests/Source/RuntimeTests/Private/RuntimeTests.cpp" \
 	"$$unrealRootPath/Engine/Plugins/Tests/RuntimeTests/Source/RuntimeTests/Private/Slate/RichTextMarkupProcessingTest.cpp" \
 	"$$unrealRootPath/Engine/Plugins/Tests/ScreenshotTools/Source/ScreenshotTools/Private/ScreenshotTools.cpp" \
+	"$$MyNetRootPath/Source/MyNet/Bomb.cpp" \
 	"$$MyNetRootPath/Source/MyNet/MyNet.cpp" \
 	"$$MyNetRootPath/Source/MyNet/MyNetCharacter.cpp" \
 	"$$MyNetRootPath/Source/MyNet/MyNetGameMode.cpp" \

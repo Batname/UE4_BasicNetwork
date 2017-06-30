@@ -248,18 +248,6 @@ void AMyNetCharacter::AttempToSpawnBomb()
 	{
 		SpawnBomb();
 	}
-
-	// TODO: this code will be removed next part
-	FDamageEvent DmgEvent;
-
-	if (Role < ROLE_Authority)
-	{
-		ServerTakeDamage(25.f, DmgEvent, GetController(), this);
-	}
-	else
-	{
-		TakeDamage(25.f, DmgEvent, GetController(), this);
-	}
 }
 
 void AMyNetCharacter::ServerSpawnBomb_Implementation()
@@ -272,4 +260,17 @@ bool AMyNetCharacter::ServerSpawnBomb_Validate()
 	return true;
 }
 
+void AMyNetCharacter::SpawnBomb()
+{
+	// Decrease the bomb count and update the text in teh local client
+	// OnRep_BombCount will be called in every other client
+	BombCount--;
+	UpdateCharText();
 
+	FActorSpawnParameters SpawnParameters;
+	SpawnParameters.Instigator = this;
+	SpawnParameters.Owner = GetController();
+
+	// Spawn the bomb
+	GetWorld()->SpawnActor<ABomb>(BombActorBP, GetActorLocation() + GetActorForwardVector() * 200, GetActorRotation(), SpawnParameters);
+}

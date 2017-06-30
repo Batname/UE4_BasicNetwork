@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "Components/TextRenderComponent.h"
 #include "Net/UnrealNetwork.h"
+#include "Bomb.h"
 #include "MyNetCharacter.generated.h"
 
 UCLASS(config=Game)
@@ -168,6 +169,11 @@ private:
 public:
 	/** Applies damage to the character */
 	virtual float TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser);
+
+public:
+	/** Bomb Blueprint */
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<ABomb> BombActorBP;
 
 };
 
